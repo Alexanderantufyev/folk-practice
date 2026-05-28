@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, 'Segoe UI', sans-serif; }
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: white;
+  color: #0f172a;
+  outline: none;
+  transition: box-shadow 0.15s;
+}
+.input:focus { box-shadow: 0 0 0 2px rgba(16,185,129,0.25); border-color: #10b981; }
+
+@media print {
+  .print\:hidden { display: none !important; }
+  body { font-size: 11px; }
+}
+
