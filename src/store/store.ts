@@ -4,7 +4,6 @@ import type { ClassEvent } from '../types'
 
 const REST_URL = import.meta.env.VITE_UPSTASH_REST_URL as string | undefined
 const REST_TOKEN = import.meta.env.VITE_UPSTASH_REST_TOKEN as string | undefined
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY as string | undefined
 
 async function redisGet(): Promise<ClassEvent[]> {
   if (!REST_URL || !REST_TOKEN) return []
@@ -40,14 +39,11 @@ async function redisSet(events: ClassEvent[]): Promise<void> {
 interface AppStore {
   events: ClassEvent[]
   isLoading: boolean
-  isAdmin: boolean
   currentMonth: Date
 
   loadEvents: () => Promise<void>
   saveEvent: (event: ClassEvent) => Promise<void>
   deleteEvent: (id: string) => Promise<void>
-  tryAdminLogin: (key: string) => boolean
-  adminLogout: () => void
   setCurrentMonth: (date: Date) => void
   getEventsForDate: (date: string) => ClassEvent[]
 }
@@ -55,7 +51,6 @@ interface AppStore {
 export const useStore = create<AppStore>((set, get) => ({
   events: [],
   isLoading: false,
-  isAdmin: false,
   currentMonth: new Date(),
 
   loadEvents: async () => {
@@ -79,16 +74,6 @@ export const useStore = create<AppStore>((set, get) => ({
     set({ events: updated })
     await redisSet(updated)
   },
-
-  tryAdminLogin: (key) => {
-    if (ADMIN_KEY && key === ADMIN_KEY) {
-      set({ isAdmin: true })
-      return true
-    }
-    return false
-  },
-
-  adminLogout: () => set({ isAdmin: false }),
 
   setCurrentMonth: (date) => set({ currentMonth: date }),
 

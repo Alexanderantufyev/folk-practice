@@ -25,8 +25,6 @@ function newEvent(date: string): ClassEvent {
     maxParticipants: 10,
     venue: 'indoor',
     images: [],
-    formUrl: '',
-    currentParticipants: 0,
     time: '',
   }
 }
@@ -56,7 +54,6 @@ export function AdminEventForm({ date, onClose }: Props) {
 
   const handleSave = async () => {
     if (!form.title.trim()) { toast.error('Укажите название'); return }
-    if (!form.formUrl.trim()) { toast.error('Укажите ссылку на форму'); return }
     setSaving(true)
     await saveEvent(form)
     toast.success('Сохранено')
@@ -165,17 +162,8 @@ export function AdminEventForm({ date, onClose }: Props) {
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Макс. участников">
-              <input className={inp} type="number" min="1" value={form.maxParticipants} onChange={e => patch({ maxParticipants: Number(e.target.value) })} />
-            </Field>
-            <Field label="Записалось (вручную)">
-              <input className={inp} type="number" min="0" value={form.currentParticipants} onChange={e => patch({ currentParticipants: Number(e.target.value) })} />
-            </Field>
-          </div>
-
-          <Field label="Ссылка на Яндекс-форму *">
-            <input className={inp} value={form.formUrl} onChange={e => patch({ formUrl: e.target.value })} placeholder="https://forms.yandex.ru/..." />
+          <Field label="Макс. участников">
+            <input className={inp} type="number" min="1" value={form.maxParticipants} onChange={e => patch({ maxParticipants: Number(e.target.value) })} />
           </Field>
 
           <Field label="Изображения (ссылки)">

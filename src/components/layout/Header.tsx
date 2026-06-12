@@ -1,8 +1,4 @@
-import { useStore } from '../../store/store'
-
 export function Header() {
-  const { isAdmin, adminLogout } = useStore()
-
   return (
     <header className="bg-white border-b border-stone-100 shadow-sm">
       <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
@@ -24,15 +20,6 @@ export function Header() {
         <p className="hidden sm:block text-xs text-stone-500 text-right max-w-[160px] leading-snug shrink-0">
           Здесь вы можете записаться на наши мастер-классы
         </p>
-
-        {isAdmin && (
-          <button
-            onClick={adminLogout}
-            className="text-xs text-pomor-500 hover:text-pomor-700 transition-colors px-2 py-1 rounded border border-pomor-200 shrink-0"
-          >
-            Выйти
-          </button>
-        )}
       </div>
 
       <p className="sm:hidden text-center text-xs text-stone-400 pb-2 px-4">

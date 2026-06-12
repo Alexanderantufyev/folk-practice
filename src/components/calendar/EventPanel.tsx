@@ -17,16 +17,7 @@ export function EventPanel({ date, onClose }: EventPanelProps) {
 
   const events = date ? getEventsForDate(date) : []
   const event = events[0] ?? null
-
-  const isFull = event
-    ? event.currentParticipants >= event.maxParticipants
-    : false
-
-  const spotsLeft = event ? event.maxParticipants - event.currentParticipants : 0
-
-  const dateLabel = date
-    ? format(parseISO(date), 'd MMMM yyyy', { locale: ru })
-    : ''
+  const dateLabel = date ? format(parseISO(date), 'd MMMM yyyy', { locale: ru }) : ''
 
   return (
     <AnimatePresence>
@@ -42,26 +33,25 @@ export function EventPanel({ date, onClose }: EventPanelProps) {
             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
             className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden"
           >
-            {/* Image carousel */}
             {event.images.length > 0 && (
               <div className="relative w-full aspect-video bg-stone-100 shrink-0">
                 <img src={event.images[imgIndex]} alt={event.title} className="w-full h-full object-cover" />
                 {event.images.length > 1 && (
                   <>
-                    <button onClick={() => setImgIndex(i => Math.max(0, i - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5 transition-colors">
+                    <button onClick={() => setImgIndex(i => Math.max(0, i - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5">
                       <ChevronLeft size={16} />
                     </button>
-                    <button onClick={() => setImgIndex(i => Math.min(event.images.length - 1, i + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5 transition-colors">
+                    <button onClick={() => setImgIndex(i => Math.min(event.images.length - 1, i + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5">
                       <ChevronRight size={16} />
                     </button>
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                       {event.images.map((_, i) => (
-                        <button key={i} onClick={() => setImgIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIndex ? 'bg-white' : 'bg-white/40'}`} />
+                        <button key={i} onClick={() => setImgIndex(i)} className={`w-1.5 h-1.5 rounded-full ${i === imgIndex ? 'bg-white' : 'bg-white/40'}`} />
                       ))}
                     </div>
                   </>
                 )}
-                <button onClick={onClose} className="absolute top-3 right-3 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5 transition-colors">
+                <button onClick={onClose} className="absolute top-3 right-3 bg-black/30 hover:bg-black/50 text-white rounded-full p-1.5">
                   <X size={16} />
                 </button>
               </div>
@@ -78,15 +68,11 @@ export function EventPanel({ date, onClose }: EventPanelProps) {
                 )}
 
                 <p className="text-xs text-pomor-500 font-semibold uppercase tracking-wider mb-1">{dateLabel}</p>
-
-                {/* Master badge */}
                 <span className="inline-block text-xs font-medium text-pomor-600 bg-pomor-50 px-2.5 py-1 rounded-full mb-2">
                   Мастер: {event.master}
                 </span>
-
                 <h3 className="text-xl font-bold text-stone-900 leading-snug mb-4">{event.title}</h3>
 
-                {/* Meta info */}
                 <div className="flex flex-col gap-2 mb-4">
                   {(event.time || event.duration) && (
                     <div className="flex items-center gap-2 text-sm text-stone-500">
@@ -100,7 +86,7 @@ export function EventPanel({ date, onClose }: EventPanelProps) {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-stone-500">
                     <Users size={14} className="text-pomor-400 shrink-0" />
-                    <span>{isFull ? 'Все места заняты' : `Осталось мест: ${spotsLeft} из ${event.maxParticipants}`}</span>
+                    <span>Мест: {event.maxParticipants}</span>
                   </div>
                   {event.forChildren && (
                     <div className="flex items-center gap-2 text-sm text-pomor-600">
@@ -110,25 +96,8 @@ export function EventPanel({ date, onClose }: EventPanelProps) {
                   )}
                 </div>
 
-                {/* Description */}
                 {event.description && (
-                  <p className="text-sm text-stone-600 leading-relaxed mb-5 whitespace-pre-line">{event.description}</p>
-                )}
-
-                {/* Register button */}
-                {isFull ? (
-                  <div className="w-full py-3.5 rounded-2xl bg-stone-100 text-stone-400 text-sm font-semibold text-center">
-                    Мест нет
-                  </div>
-                ) : (
-                  <a
-                    href={event.formUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full py-3.5 rounded-2xl bg-pomor-500 hover:bg-pomor-600 active:bg-pomor-700 text-white text-sm font-semibold text-center transition-colors shadow-lg shadow-pomor-500/30"
-                  >
-                    Записаться на мастер-класс
-                  </a>
+                  <p className="text-sm text-stone-600 leading-relaxed whitespace-pre-line">{event.description}</p>
                 )}
               </div>
             </div>

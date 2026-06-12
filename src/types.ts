@@ -18,7 +18,5 @@ export interface ClassEvent {
   maxParticipants: number
   venue: Venue
   images: string[]
-  formUrl: string
-  currentParticipants: number
   time?: string
 }

@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Header } from './components/layout/Header'
 import { CalendarView } from './components/calendar/CalendarView'
-import { AdminLogin } from './components/ui/AdminLogin'
 import { useStore } from './store/store'
 
 export default function App() {
-  const { loadEvents, isLoading, isAdmin } = useStore()
-  const [showLogin, setShowLogin] = useState(false)
+  const { loadEvents, isLoading } = useStore()
 
   useEffect(() => { loadEvents() }, [loadEvents])
 
@@ -23,24 +21,9 @@ export default function App() {
         <CalendarView />
       )}
 
-      {isAdmin && (
-        <div className="fixed top-0 left-0 right-0 h-1 bg-pomor-400 z-50 pointer-events-none" />
-      )}
-
       <footer className="text-center py-6 mt-4">
-        <p className="text-xs text-stone-300">
-          Ладом да Берегом © 2025
-          {' · '}
-          <button
-            onClick={() => setShowLogin(true)}
-            className="hover:text-pomor-400 transition-colors"
-          >
-            ·
-          </button>
-        </p>
+        <p className="text-xs text-stone-300">Ладом да Берегом © 2025</p>
       </footer>
-
-      {showLogin && <AdminLogin onClose={() => setShowLogin(false)} />}
 
       <Toaster
         position="bottom-center"
