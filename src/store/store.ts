@@ -5,6 +5,8 @@ import type { ClassEvent } from '../types'
 const REST_URL = import.meta.env.VITE_UPSTASH_REST_URL as string | undefined
 const REST_TOKEN = import.meta.env.VITE_UPSTASH_REST_TOKEN as string | undefined
 
+export const isRedisConfigured = !!(REST_URL && REST_TOKEN)
+
 async function redisGet(): Promise<ClassEvent[]> {
   if (!REST_URL || !REST_TOKEN) return []
   try {

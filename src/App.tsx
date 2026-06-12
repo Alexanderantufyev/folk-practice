@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Header } from './components/layout/Header'
 import { CalendarView } from './components/calendar/CalendarView'
-import { useStore } from './store/store'
+import { useStore, isRedisConfigured } from './store/store'
 
 export default function App() {
   const { loadEvents, isLoading } = useStore()
@@ -12,6 +12,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50">
       <Header />
+
+      {!isRedisConfigured && (
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600">
+            ⚠️ Redis не настроен — изменения не сохраняются. Проверьте переменные окружения в Vercel.
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex justify-center py-20">

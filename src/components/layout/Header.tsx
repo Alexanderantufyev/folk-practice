@@ -18,12 +18,12 @@ export function Header() {
         </div>
 
         <p className="hidden sm:block text-xs text-stone-500 text-right max-w-[160px] leading-snug shrink-0">
-          Здесь вы можете записаться на наши мастер-классы
+          Внутренняя форма для мастеров
         </p>
       </div>
 
       <p className="sm:hidden text-center text-xs text-stone-400 pb-2 px-4">
-        Здесь вы можете записаться на наши мастер-классы
+        Внутренняя форма для мастеров
       </p>
     </header>
   )
