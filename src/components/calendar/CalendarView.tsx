@@ -21,10 +21,10 @@ export function CalendarView() {
 
   const handleDayClick = (dateStr: string) => {
     const events = getEventsForDate(dateStr)
-    if (events.length > 0) {
-      setSelectedDate(dateStr)
-    } else if (isAdmin) {
+    if (isAdmin) {
       setEditingDate(dateStr)
+    } else if (events.length > 0) {
+      setSelectedDate(dateStr)
     }
   }
 
