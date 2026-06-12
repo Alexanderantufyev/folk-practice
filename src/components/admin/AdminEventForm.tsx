@@ -17,7 +17,7 @@ function newEvent(date: string): ClassEvent {
   return {
     id: crypto.randomUUID(),
     date,
-    master: 'Карлос',
+    master: 'Кожа',
     title: '',
     description: '',
     duration: '',
@@ -99,7 +99,7 @@ export function AdminEventForm({ date, onClose }: Props) {
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
 
-          <Field label="Мастер">
+          <Field label="Мастер-класс">
             <div className="flex gap-2">
               {MASTERS.map(m => (
                 <button
@@ -172,7 +172,7 @@ export function AdminEventForm({ date, onClose }: Props) {
             <input className={inp} type="number" min="1" value={form.maxParticipants} onChange={e => patch({ maxParticipants: Number(e.target.value) })} />
           </Field>
 
-          <Field label="Изображения (ссылки)">
+          <Field label="Картинки для поста (облако)">
             <div className="space-y-2">
               {form.images.map((url, i) => (
                 <div key={i} className="flex gap-2 items-center">

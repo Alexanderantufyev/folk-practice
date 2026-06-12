@@ -1,10 +1,10 @@
-export type Master = 'Карлос' | 'Разумов' | 'Зарапина'
+export type Master = 'Кожа' | 'Дерево' | 'Ткань' | 'Песни' | 'Танцы'
 export type Venue = 'indoor' | 'outdoor'
 
-export const MASTERS: Master[] = ['Карлос', 'Разумов', 'Зарапина']
+export const MASTERS: Master[] = ['Кожа', 'Дерево', 'Ткань', 'Песни', 'Танцы']
 export const VENUE_LABELS: Record<Venue, string> = {
   indoor: 'В доме',
-  outdoor: 'В уличной мастерской',
+  outdoor: 'Снаружи',
 }
 
 export interface ClassEvent {
