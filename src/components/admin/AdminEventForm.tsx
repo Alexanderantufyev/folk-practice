@@ -81,7 +81,7 @@ export function AdminEventForm({ date, onClose }: Props) {
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92dvh] flex flex-col overflow-hidden"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100 shrink-0">
           <div>
@@ -90,9 +90,18 @@ export function AdminEventForm({ date, onClose }: Props) {
             </p>
             <p className="text-sm font-semibold text-stone-800">{dateLabel}</p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400">
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-1.5 rounded-xl bg-pomor-500 hover:bg-pomor-600 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+            >
+              {saving ? '...' : 'Сохранить'}
+            </button>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400">
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
