@@ -76,12 +76,13 @@ export function CalendarView() {
               key={dateStr}
               onClick={() => inMonth && handleDayClick(dateStr)}
               className={[
-                'relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all text-sm font-medium',
+                'group relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all text-sm font-medium',
                 !inMonth && 'opacity-20 cursor-default',
-                inMonth && !hasEvent && 'hover:bg-stone-100 text-stone-600',
-                inMonth && hasEvent && !isFull && 'bg-pomor-500 text-white hover:bg-pomor-600 shadow-sm',
-                inMonth && hasEvent && isFull && 'bg-stone-200 text-stone-400 cursor-not-allowed',
-                today && !hasEvent && 'ring-2 ring-pomor-400 ring-offset-1',
+                inMonth && !hasEvent && !isAdmin && 'text-stone-400 cursor-default',
+                inMonth && !hasEvent && isAdmin && 'hover:bg-pomor-50 hover:text-pomor-600 text-stone-500 cursor-pointer',
+                inMonth && hasEvent && !isFull && 'bg-pomor-500 text-white hover:bg-pomor-600 shadow-sm cursor-pointer',
+                inMonth && hasEvent && isFull && 'bg-stone-200 text-stone-400',
+                today && !hasEvent && 'ring-2 ring-pomor-300 ring-offset-1',
               ].filter(Boolean).join(' ')}
             >
               {format(day, 'd')}
@@ -89,9 +90,7 @@ export function CalendarView() {
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white opacity-70" />
               )}
               {isAdmin && inMonth && !hasEvent && (
-                <span className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100">
-                  <Plus size={10} className="text-pomor-400" />
-                </span>
+                <Plus size={12} className="absolute bottom-0.5 right-0.5 opacity-0 group-hover:opacity-60 text-pomor-500 transition-opacity" />
               )}
             </button>
           )
