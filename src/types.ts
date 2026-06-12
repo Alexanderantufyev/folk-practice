@@ -1,14 +1,24 @@
+export type Master = 'Карлос' | 'Разумов' | 'Зарапина'
+export type Venue = 'indoor' | 'outdoor'
+
+export const MASTERS: Master[] = ['Карлос', 'Разумов', 'Зарапина']
+export const VENUE_LABELS: Record<Venue, string> = {
+  indoor: 'В доме',
+  outdoor: 'В уличной мастерской',
+}
+
 export interface ClassEvent {
   id: string
-  date: string          // YYYY-MM-DD
+  date: string
+  master: Master
   title: string
   description: string
-  time: string          // "18:00"
-  duration?: string     // "2 часа"
-  location?: string
-  images: string[]      // image URLs
-  formUrl: string       // Yandex Form URL
-  maxParticipants?: number
+  duration: string
+  forChildren: boolean
+  maxParticipants: number
+  venue: Venue
+  images: string[]
+  formUrl: string
   currentParticipants: number
-  price?: number
+  time?: string
 }

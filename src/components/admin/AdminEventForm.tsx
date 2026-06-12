@@ -5,7 +5,8 @@ import { useStore } from '../../store/store'
 import { format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import toast from 'react-hot-toast'
-import type { ClassEvent } from '../../types'
+import type { ClassEvent, Master, Venue } from '../../types'
+import { MASTERS, VENUE_LABELS } from '../../types'
 
 interface Props {
   date: string | null
@@ -16,16 +17,17 @@ function newEvent(date: string): ClassEvent {
   return {
     id: crypto.randomUUID(),
     date,
+    master: 'Карлос',
     title: '',
     description: '',
-    time: '',
     duration: '',
-    location: '',
+    forChildren: false,
+    maxParticipants: 10,
+    venue: 'indoor',
     images: [],
     formUrl: '',
-    maxParticipants: undefined,
     currentParticipants: 0,
-    price: undefined,
+    time: '',
   }
 }
 
@@ -44,16 +46,13 @@ export function AdminEventForm({ date, onClose }: Props) {
 
   if (!date || !form) return null
 
-  const set = (patch: Partial<ClassEvent>) => setForm(f => f ? { ...f, ...patch } : f)
+  const patch = (p: Partial<ClassEvent>) => setForm(f => f ? { ...f, ...p } : f)
 
   const addImage = () => {
     if (!newImageUrl.trim()) return
-    set({ images: [...form.images, newImageUrl.trim()] })
+    patch({ images: [...form.images, newImageUrl.trim()] })
     setNewImageUrl('')
   }
-
-  const removeImage = (i: number) =>
-    set({ images: form.images.filter((_, idx) => idx !== i) })
 
   const handleSave = async () => {
     if (!form.title.trim()) { toast.error('Укажите название'); return }
@@ -72,30 +71,25 @@ export function AdminEventForm({ date, onClose }: Props) {
     onClose()
   }
 
+  const isExisting = !!getEventsForDate(date)[0]
   const dateLabel = format(parseISO(date), 'd MMMM yyyy', { locale: ru })
-  const isExisting = getEventsForDate(date).length > 0
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/40 z-40"
         onClick={onClose}
       />
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 260 }}
         className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100 shrink-0">
           <div>
             <p className="text-[10px] font-semibold text-pomor-500 uppercase tracking-wider">
-              {isExisting ? 'Редактировать' : 'Добавить занятие'}
+              {isExisting ? 'Редактировать занятие' : 'Новое занятие'}
             </p>
             <p className="text-sm font-semibold text-stone-800">{dateLabel}</p>
           </div>
@@ -104,68 +98,106 @@ export function AdminEventForm({ date, onClose }: Props) {
           </button>
         </div>
 
-        {/* Form */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
 
-          <Field label="Название *">
-            <input className={input} value={form.title} onChange={e => set({ title: e.target.value })} placeholder="Название мастер-класса" />
+          <Field label="Мастер">
+            <div className="flex gap-2">
+              {MASTERS.map(m => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => patch({ master: m as Master })}
+                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
+                    form.master === m
+                      ? 'bg-pomor-500 text-white border-pomor-500'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-pomor-300'
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          <Field label="Название мастер-класса *">
+            <input className={inp} value={form.title} onChange={e => patch({ title: e.target.value })} placeholder="Например: Роспись по дереву" />
           </Field>
 
           <Field label="Описание">
-            <textarea className={`${input} resize-none`} rows={4} value={form.description} onChange={e => set({ description: e.target.value })} placeholder="Расскажите о мастер-классе..." />
+            <textarea
+              className={`${inp} resize-none`}
+              rows={5}
+              value={form.description}
+              onChange={e => patch({ description: e.target.value })}
+              placeholder={"Чем будем заниматься\nКакие материалы используем\nНеобходимые навыки\nЧто взять с собой"}
+            />
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Время">
-              <input className={input} value={form.time} onChange={e => set({ time: e.target.value })} placeholder="18:00" />
-            </Field>
             <Field label="Длительность">
-              <input className={input} value={form.duration ?? ''} onChange={e => set({ duration: e.target.value })} placeholder="2 часа" />
+              <input className={inp} value={form.duration} onChange={e => patch({ duration: e.target.value })} placeholder="2 часа" />
+            </Field>
+            <Field label="Время начала">
+              <input className={inp} value={form.time ?? ''} onChange={e => patch({ time: e.target.value })} placeholder="18:00" />
             </Field>
           </div>
-
-          <Field label="Место">
-            <input className={input} value={form.location ?? ''} onChange={e => set({ location: e.target.value })} placeholder="Адрес или название места" />
-          </Field>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Цена (руб)">
-              <input className={input} type="number" min="0" value={form.price ?? ''} onChange={e => set({ price: e.target.value ? Number(e.target.value) : undefined })} placeholder="500" />
+            <Field label="Где занимаемся">
+              <select className={inp} value={form.venue} onChange={e => patch({ venue: e.target.value as Venue })}>
+                {(Object.entries(VENUE_LABELS) as [Venue, string][]).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
             </Field>
-            <Field label="Макс. мест">
-              <input className={input} type="number" min="1" value={form.maxParticipants ?? ''} onChange={e => set({ maxParticipants: e.target.value ? Number(e.target.value) : undefined })} placeholder="5" />
+            <Field label="Подходит для детей">
+              <button
+                type="button"
+                onClick={() => patch({ forChildren: !form.forChildren })}
+                className={`w-full py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                  form.forChildren
+                    ? 'bg-pomor-500 text-white border-pomor-500'
+                    : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-pomor-300'
+                }`}
+              >
+                {form.forChildren ? '✓ Да, подходит' : 'Нет'}
+              </button>
             </Field>
           </div>
 
-          <Field label="Записалось (обновлять вручную)">
-            <input className={input} type="number" min="0" value={form.currentParticipants} onChange={e => set({ currentParticipants: Number(e.target.value) })} />
-          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Макс. участников">
+              <input className={inp} type="number" min="1" value={form.maxParticipants} onChange={e => patch({ maxParticipants: Number(e.target.value) })} />
+            </Field>
+            <Field label="Записалось (вручную)">
+              <input className={inp} type="number" min="0" value={form.currentParticipants} onChange={e => patch({ currentParticipants: Number(e.target.value) })} />
+            </Field>
+          </div>
 
           <Field label="Ссылка на Яндекс-форму *">
-            <input className={input} value={form.formUrl} onChange={e => set({ formUrl: e.target.value })} placeholder="https://forms.yandex.ru/..." />
+            <input className={inp} value={form.formUrl} onChange={e => patch({ formUrl: e.target.value })} placeholder="https://forms.yandex.ru/..." />
           </Field>
 
-          {/* Images */}
           <Field label="Изображения (ссылки)">
             <div className="space-y-2">
               {form.images.map((url, i) => (
                 <div key={i} className="flex gap-2 items-center">
-                  <img src={url} alt="" className="w-12 h-9 object-cover rounded-lg bg-stone-100 shrink-0" />
-                  <span className="flex-1 text-xs text-stone-500 truncate">{url}</span>
-                  <button onClick={() => removeImage(i)} className="text-red-400 hover:text-red-600 shrink-0">
+                  <img src={url} alt="" className="w-12 h-9 object-cover rounded-lg bg-stone-100 shrink-0" onError={e => (e.currentTarget.style.display = 'none')} />
+                  <span className="flex-1 text-xs text-stone-400 truncate">{url}</span>
+                  <button onClick={() => patch({ images: form.images.filter((_, j) => j !== i) })} className="text-red-400 hover:text-red-600 shrink-0">
                     <Trash2 size={14} />
                   </button>
                 </div>
               ))}
               <div className="flex gap-2">
                 <input
-                  className={`${input} flex-1`}
+                  className={`${inp} flex-1`}
                   value={newImageUrl}
                   onChange={e => setNewImageUrl(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && addImage()}
                   placeholder="https://..."
                 />
-                <button onClick={addImage} className="px-3 py-2 rounded-xl bg-pomor-50 hover:bg-pomor-100 text-pomor-600 transition-colors">
+                <button onClick={addImage} className="px-3 rounded-xl bg-pomor-50 hover:bg-pomor-100 text-pomor-600 transition-colors">
                   <Plus size={16} />
                 </button>
               </div>
@@ -173,7 +205,6 @@ export function AdminEventForm({ date, onClose }: Props) {
           </Field>
         </div>
 
-        {/* Footer */}
         <div className="px-5 py-4 border-t border-stone-100 flex gap-3 shrink-0">
           {isExisting && (
             <button onClick={handleDelete} className="px-4 py-2.5 rounded-2xl border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
@@ -183,7 +214,7 @@ export function AdminEventForm({ date, onClose }: Props) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 py-2.5 rounded-2xl bg-pomor-500 hover:bg-pomor-600 text-white text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-pomor-500/25"
+            className="flex-1 py-2.5 rounded-2xl bg-pomor-500 hover:bg-pomor-600 text-white text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-pomor-500/20"
           >
             {saving ? 'Сохранение...' : 'Сохранить'}
           </button>
@@ -202,4 +233,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-const input = 'w-full px-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-pomor-400/40 focus:border-pomor-400 transition-all'
+const inp = 'w-full px-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-pomor-400/40 focus:border-pomor-400 transition-all'

@@ -120,7 +120,6 @@ export function CalendarView() {
       <EventPanel
         date={selectedDate}
         onClose={() => setSelectedDate(null)}
-        onEdit={isAdmin ? (date) => { setSelectedDate(null); setEditingDate(date) } : undefined}
       />
       <AdminEventForm
         date={editingDate}
