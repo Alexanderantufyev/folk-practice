@@ -3,15 +3,16 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isToday } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useStore } from '../../store/store'
-import { EventPanel } from './EventPanel'
+import { DayPanel } from './DayPanel'
 import { AdminEventForm } from '../admin/AdminEventForm'
+import type { ClassEvent } from '../../types'
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
 export function CalendarView() {
   const { currentMonth, setCurrentMonth, getEventsForDate } = useStore()
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [editingDate, setEditingDate] = useState<string | null>(null)
+  const [viewingDate, setViewingDate] = useState<string | null>(null)
+  const [editState, setEditState] = useState<{ date: string; event?: ClassEvent } | null>(null)
 
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(currentMonth)
@@ -20,7 +21,12 @@ export function CalendarView() {
   const days = eachDayOfInterval({ start: calStart, end: calEnd })
 
   const handleDayClick = (dateStr: string) => {
-    setEditingDate(dateStr)
+    const evts = getEventsForDate(dateStr)
+    if (evts.length === 0) {
+      setEditState({ date: dateStr })
+    } else {
+      setViewingDate(dateStr)
+    }
   }
 
   const monthLabel = format(currentMonth, 'LLLL yyyy', { locale: ru })
@@ -48,8 +54,6 @@ export function CalendarView() {
           const dateStr = format(day, 'yyyy-MM-dd')
           const events = getEventsForDate(dateStr)
           const hasEvent = events.length > 0
-          const isFull = hasEvent && events[0].maxParticipants != null &&
-            (events[0] as any).currentParticipants >= events[0].maxParticipants
           const inMonth = isSameMonth(day, currentMonth)
           const today = isToday(day)
 
@@ -58,20 +62,27 @@ export function CalendarView() {
               key={dateStr}
               onClick={() => inMonth && handleDayClick(dateStr)}
               className={[
-                'group relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all text-sm font-medium',
+                'group relative aspect-square rounded-xl flex flex-col items-center overflow-hidden transition-all font-medium',
+                hasEvent ? 'justify-start pt-1.5' : 'justify-center text-sm',
                 !inMonth && 'opacity-20 cursor-default',
                 inMonth && !hasEvent && 'hover:bg-pomor-50 hover:text-pomor-600 text-stone-500 cursor-pointer',
-                inMonth && hasEvent && !isFull && 'bg-pomor-500 text-white hover:bg-pomor-600 shadow-sm cursor-pointer',
-                inMonth && hasEvent && isFull && 'bg-stone-200 text-stone-400 cursor-pointer',
+                inMonth && hasEvent && 'bg-pomor-500 text-white hover:bg-pomor-600 shadow-sm cursor-pointer',
                 today && !hasEvent && 'ring-2 ring-pomor-300 ring-offset-1',
               ].filter(Boolean).join(' ')}
             >
-              {format(day, 'd')}
-              {hasEvent && !isFull && (
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white opacity-70" />
+              <span className={hasEvent ? 'text-xs leading-none' : ''}>{format(day, 'd')}</span>
+              {hasEvent && (
+                <span className="text-[9px] font-normal leading-tight px-0.5 w-full text-center truncate mt-0.5 opacity-90">
+                  {events.length === 1 ? (events[0].title || events[0].master) : `${events.length} зан.`}
+                </span>
+              )}
+              {events.length > 1 && (
+                <span className="absolute top-0.5 right-0.5 text-[8px] font-bold bg-white/25 rounded-full w-3.5 h-3.5 flex items-center justify-center">
+                  {events.length}
+                </span>
               )}
               {inMonth && !hasEvent && (
-                <Plus size={12} className="absolute bottom-0.5 right-0.5 opacity-0 group-hover:opacity-50 text-pomor-400 transition-opacity" />
+                <Plus size={10} className="absolute bottom-0.5 right-0.5 opacity-0 group-hover:opacity-50 text-pomor-400 transition-opacity" />
               )}
             </button>
           )
@@ -83,23 +94,23 @@ export function CalendarView() {
           <span className="w-3 h-3 rounded bg-pomor-500 inline-block" />
           Есть занятие
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-stone-200 inline-block" />
-          Мест нет
-        </span>
       </div>
 
       <p className="text-center text-xs text-pomor-400 mt-3">
         Нажмите на дату чтобы добавить или изменить занятие
       </p>
 
-      <EventPanel
-        date={selectedDate}
-        onClose={() => setSelectedDate(null)}
+      <DayPanel
+        date={viewingDate}
+        onClose={() => setViewingDate(null)}
+        onEdit={(event) => { setViewingDate(null); setEditState({ date: event.date, event }) }}
+        onAdd={() => { setEditState({ date: viewingDate! }); setViewingDate(null) }}
       />
       <AdminEventForm
-        date={editingDate}
-        onClose={() => setEditingDate(null)}
+        open={!!editState}
+        date={editState?.date ?? ''}
+        event={editState?.event}
+        onClose={() => setEditState(null)}
       />
     </div>
   )
