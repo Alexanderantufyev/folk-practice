@@ -148,17 +148,22 @@ export function AdminEventForm({ date, onClose }: Props) {
               </select>
             </Field>
             <Field label="Подходит для детей">
-              <button
-                type="button"
-                onClick={() => patch({ forChildren: !form.forChildren })}
-                className={`w-full py-2.5 rounded-xl text-sm font-medium border transition-all ${
-                  form.forChildren
-                    ? 'bg-pomor-500 text-white border-pomor-500'
-                    : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-pomor-300'
-                }`}
-              >
-                {form.forChildren ? '✓ Да, подходит' : 'Нет'}
-              </button>
+              <div className="flex gap-2">
+                {([true, false] as const).map(val => (
+                  <button
+                    key={String(val)}
+                    type="button"
+                    onClick={() => patch({ forChildren: val })}
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
+                      form.forChildren === val
+                        ? 'bg-pomor-500 text-white border-pomor-500'
+                        : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-pomor-300'
+                    }`}
+                  >
+                    {val ? 'Да' : 'Нет'}
+                  </button>
+                ))}
+              </div>
             </Field>
           </div>
 
