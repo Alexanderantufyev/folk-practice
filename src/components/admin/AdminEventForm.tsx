@@ -79,9 +79,9 @@ export function AdminEventForm({ date, onClose }: Props) {
         onClick={onClose}
       />
       <motion.div
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92dvh] flex flex-col overflow-hidden"
+        className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col overflow-hidden"
       >
         <div className="flex items-center justify-between px-5 py-3 border-b border-stone-100 shrink-0">
           <button onClick={onClose} className="text-sm text-stone-400 hover:text-stone-700 transition-colors px-1">
@@ -125,7 +125,7 @@ export function AdminEventForm({ date, onClose }: Props) {
           <Field label="Описание">
             <textarea
               className={`${inp} resize-none`}
-              rows={5}
+              rows={4}
               value={form.description}
               onChange={e => patch({ description: e.target.value })}
               placeholder={"Чем будем заниматься\nКакие материалы используем\nНеобходимые навыки\nЧто взять с собой"}
@@ -141,33 +141,32 @@ export function AdminEventForm({ date, onClose }: Props) {
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Где занимаемся">
-              <select className={inp} value={form.venue} onChange={e => patch({ venue: e.target.value as Venue })}>
-                {(Object.entries(VENUE_LABELS) as [Venue, string][]).map(([k, v]) => (
-                  <option key={k} value={k}>{v}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Подходит для детей">
-              <div className="flex gap-2">
-                {([true, false] as const).map(val => (
-                  <button
-                    key={String(val)}
-                    type="button"
-                    onClick={() => patch({ forChildren: val })}
-                    className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
-                      form.forChildren === val
-                        ? 'bg-pomor-500 text-white border-pomor-500'
-                        : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-pomor-300'
-                    }`}
-                  >
-                    {val ? 'Да' : 'Нет'}
-                  </button>
-                ))}
-              </div>
-            </Field>
-          </div>
+          <Field label="Где занимаемся">
+            <select className={inp} value={form.venue} onChange={e => patch({ venue: e.target.value as Venue })}>
+              {(Object.entries(VENUE_LABELS) as [Venue, string][]).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="Подходит для детей">
+            <div className="flex gap-2">
+              {([true, false] as const).map(val => (
+                <button
+                  key={String(val)}
+                  type="button"
+                  onClick={() => patch({ forChildren: val })}
+                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
+                    form.forChildren === val
+                      ? 'bg-pomor-500 text-white border-pomor-500'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-pomor-300'
+                  }`}
+                >
+                  {val ? 'Да' : 'Нет'}
+                </button>
+              ))}
+            </div>
+          </Field>
 
           <Field label="Макс. участников">
             <input className={inp} type="number" min="1" value={form.maxParticipants} onChange={e => patch({ maxParticipants: Number(e.target.value) })} />
@@ -198,15 +197,15 @@ export function AdminEventForm({ date, onClose }: Props) {
               </div>
             </div>
           </Field>
-        </div>
 
-        {isExisting && (
-          <div className="px-5 py-4 border-t border-stone-100 shrink-0">
+          {isExisting && (
             <button onClick={handleDelete} className="w-full py-2.5 rounded-2xl border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
               Удалить занятие
             </button>
-          </div>
-        )}
+          )}
+
+          <div className="h-8" />
+        </div>
       </motion.div>
     </AnimatePresence>
   )
